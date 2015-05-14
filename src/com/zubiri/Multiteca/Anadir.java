@@ -1,0 +1,87 @@
+package com.zubiri.Multiteca;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.*;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class Anadir
+ */
+@WebServlet("/anadir.jr")
+public class Anadir extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+       
+    /**
+     * @see HttpServlet#HttpServlet()
+     */
+    public Anadir() {
+        super();
+        // TODO Auto-generated constructor stub
+    }
+    
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		// TODO Auto-generated method stub
+		doPost(request, response);
+	}
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 */
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+			// TODO Auto-generated method stub
+			try{ 
+				Class.forName("com.mysql.jdbc.Driver");
+				Connection cone = DriverManager.getConnection("jdbc:mysql://localhost/multiteca","root","zubiri");
+				Statement stmt = cone.createStatement();
+				
+			
+			response.setContentType("text/html;charset=UTF-8");
+			PrintWriter out = response.getWriter();
+			
+			
+		
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS vehiculos"
+					+"(matricula varchar(7) primary key,"
+					+"marca varchar(25),"
+					+"combustible enum('Diesel','Gasolina'),"
+					+"consumo integer unsigned,"
+					+"automatico enum('true','false'),"
+					+"ruedas integer unsigned)");
+			
+			
+			
+			out.println("<html>");
+			out.println("<head><title></title></head>");
+			out.println("<body>");
+			out.println("DATOS:<hr>");
+			out.println("Titulo: " + request.getParameter("titulo") + "<br>");
+			out.println("Marca: " + request.getParameter("marca") + "<br>");
+			out.println("Combustible: " + request.getParameter("combustible") + "<br>");
+			out.println("Consumo: " + Integer.parseInt(request.getParameter("consumo")) + "<br>");
+			out.println("Automático: " + Boolean.valueOf(request.getParameter("automatico")) + "<br>");
+			out.println("Número de ruedas: " + Integer.parseInt(request.getParameter("ruedas")) + "<br>");
+			stmt.executeUpdate("INSERT INTO vehiculos (matricula, marca, combustible, consumo, automatico, ruedas) VALUES ('"
+					+request.getParameter("matricula")+"','"
+					+request.getParameter("marca")+"','"
+					+request.getParameter("combustible")
+					+"',"+Integer.parseInt(request.getParameter("consumo"))+",'"
+					+Boolean.valueOf(request.getParameter("automatico"))+"',"
+					+Integer.parseInt(request.getParameter("ruedas"))+
+					")");
+			//stmt.executeUpdate("INSERT INTO vehiculos (matricula, marca, combustible, consumo, automatico, ruedas) VALUES ('2222aaa','audi','diesel',3,'true',2)");
+			out.println("<a href='index.html'><input type='button' value='Volver'></a>");
+			out.println("</body></html>");
+			cone.close();
+			}catch(Exception ex){
+				//Tratar el error
+			}
+		}
+
+	}
